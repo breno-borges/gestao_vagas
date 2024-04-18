@@ -10,11 +10,11 @@ import br.com.brenoborges.gestao_vagas.modules.company.repositories.JobRepositor
 
 @Service
 public class ListAllJobsByFilterUseCase {
-    
+
     @Autowired
     private JobRepository jobRepository;
-    
-    public List<JobEntity> execute(String filter){
-        return this.jobRepository.findByDescriptionContaining(filter);
+
+    public List<JobEntity> execute(String filter) {
+        return this.jobRepository.findByDescriptionContainingIgnoreCase(filter);
     }
 }

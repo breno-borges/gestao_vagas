@@ -1,6 +1,7 @@
 package br.com.brenoborges.gestao_vagas.modules.candidate.useCases;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -15,8 +16,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.com.brenoborges.gestao_vagas.exceptions.JobNotFoundException;
 import br.com.brenoborges.gestao_vagas.exceptions.UserNotFoundException;
+import br.com.brenoborges.gestao_vagas.modules.candidate.entities.ApplyJobEntity;
 import br.com.brenoborges.gestao_vagas.modules.candidate.entities.CandidateEntity;
+import br.com.brenoborges.gestao_vagas.modules.candidate.repositories.ApplyJobRepository;
 import br.com.brenoborges.gestao_vagas.modules.candidate.repositories.CandidateRepository;
+import br.com.brenoborges.gestao_vagas.modules.company.entities.JobEntity;
 import br.com.brenoborges.gestao_vagas.modules.company.repositories.JobRepository;
 
 @ExtendWith(MockitoExtension.class) // Extensão do JUnit para falar o que ele quer que utilize.
@@ -30,6 +34,9 @@ public class ApplyJobUseCaseTest {
 
     @Mock
     private JobRepository jobRepository;
+
+    @Mock
+    private ApplyJobRepository applyJobRepository;
 
     @Test
     @DisplayName("Should not be able to apply job with candidate not found")
@@ -58,5 +65,32 @@ public class ApplyJobUseCaseTest {
             // Verifica se a exceção acima é a experada.
             assertThat(e).isInstanceOf(JobNotFoundException.class);
         }
+    }
+
+    @Test
+    @DisplayName("Should be able to create a new apply job")
+    public void shouldBeAbleToCreateANewApplyJob() {
+        UUID idCandidate = UUID.randomUUID();
+        UUID idJob = UUID.randomUUID();
+
+        ApplyJobEntity applyJob = ApplyJobEntity.builder()
+                .candidateId(idCandidate)
+                .jobId(idJob)
+                .build();
+
+        ApplyJobEntity applyJobCreated = ApplyJobEntity.builder()
+                .id(UUID.randomUUID()).build();
+
+        // Quando achar o Id, retorna o objeto
+        when(candidateRepository.findById(idCandidate)).thenReturn(Optional.of(new CandidateEntity()));
+
+        when(jobRepository.findById(idJob)).thenReturn(Optional.of(new JobEntity()));
+
+        when(applyJobRepository.save(applyJob)).thenReturn(applyJobCreated);
+
+        ApplyJobEntity result = applyJobCandidateUseCase.execute(idCandidate, idJob);
+
+        assertThat(result).hasFieldOrProperty("id"); // Valida se tem a propriedade Id.
+        assertNotNull(result.getId()); // Valida se o Id não é nulo.
     }
 }

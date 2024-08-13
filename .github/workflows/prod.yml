@@ -19,8 +19,8 @@ jobs:
             - name: Build project
               run: mvn clean install
             - name: Login docker
-              run: echo ${{secrets.DOCKER_PASSWORD}} | docker login -u ${{secrets.DOCKER_USERNAME}} --password-stdin
+              run: docker login -u ${{secrets.DOCKER_USERNAME}} --password-stdin
             - name: Build docker image
               run: docker build -t brenoborges/gestao_vagas .
-            - name: Publish imagem
+            - name: Publish image
               run: docker push brenoborges/gestao_vagas

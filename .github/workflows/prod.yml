@@ -1,6 +1,5 @@
 name: Gestao de Vagas Application
 
-
 on:
     push:
         branches: [main]

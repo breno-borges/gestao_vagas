@@ -3,6 +3,7 @@ package br.com.brenoborges.gestao_vagas.modules.candidate.useCases;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.security.sasl.AuthenticationException;
 
@@ -46,16 +47,19 @@ public class AuthCandidateUseCase {
 
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
 
+        List<String> roles = Arrays.asList("CANDIDATE");
+
         var expiresIn = Instant.now().plus(Duration.ofMinutes(10));
         var token = JWT.create().withIssuer("java_company")
                 .withSubject(candidate.getId().toString())
-                .withClaim("roles", Arrays.asList("CANDIDATE"))
+                .withClaim("roles", roles)
                 .withExpiresAt(expiresIn)
                 .sign(algorithm);
 
         var authCandidateResponse = AuthCandidateResponseDTO.builder()
                 .access_token(token)
                 .expires_in(expiresIn.toEpochMilli())
+                .roles(roles)
                 .build();
 
         return authCandidateResponse;

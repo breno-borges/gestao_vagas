@@ -3,6 +3,7 @@ package br.com.brenoborges.gestao_vagas.modules.company.useCases;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.security.sasl.AuthenticationException;
 
@@ -45,16 +46,19 @@ public class AuthCompanyUseCase {
 
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
 
+        List<String> roles = Arrays.asList("COMPANY");
+
         var expiresIn = Instant.now().plus(Duration.ofHours(2));
         var token = JWT.create().withIssuer("java_company")
                 .withExpiresAt(expiresIn)
                 .withSubject(company.getId().toString())
-                .withClaim("roles", Arrays.asList("COMPANY"))
+                .withClaim("roles", roles)
                 .sign(algorithm);
 
         var authCompanyResponse = AuthCompanyResponseDTO.builder()
                 .access_token(token)
                 .expires_in(expiresIn.toEpochMilli())
+                .roles(roles)
                 .build();
 
         return authCompanyResponse;
